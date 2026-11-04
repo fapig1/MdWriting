@@ -1,0 +1,86 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Timeline from '../components/Timeline.astro';
+import TriviaWall from '../components/TriviaWall.astro';
+
+const records = await getCollection('events');
+const mainEvents = records
+  .filter((item) => item.data.type === 'main')
+  .sort((a, b) => (a.data.date?.getTime() ?? 0) - (b.data.date?.getTime() ?? 0));
+const triviaItems = records.filter((item) => item.data.type === 'trivia');
+const latest = mainEvents.at(-1);
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout>
+  <section class="hero page-width">
+    <div class="hero-copy">
+      <div class="eyebrow"><span></span> A LITTLE ARCHIVE OF ORDINARY DAYS</div>
+      <h1>把主线留给时间，<br />把<span class="circled">支线</span>留给惊喜。</h1>
+      <p class="hero-intro">不必只记录宏大的节点。一次散步、一句口头禅、<br class="desktop-break" />一个计划外的转弯，都值得被好好收藏。</p>
+      <div class="hero-buttons">
+        <a class="primary-button" href="#timeline">翻开这本档案 <span>↓</span></a>
+        <span class="hero-handnote">Every little thing matters.</span>
+      </div>
+    </div>
+    <aside class="hero-note" aria-label="档案统计">
+      <div class="note-tape" aria-hidden="true"></div>
+      <div class="note-heading"><span>ARCHIVE STATUS</span><i>✳</i></div>
+      <div class="note-stats">
+        <div><strong>{String(mainEvents.length).padStart(2, '0')}</strong><span>个主线章节</span></div>
+        <div><strong>{String(triviaItems.length).padStart(2, '0')}</strong><span>条支线碎片</span></div>
+      </div>
+      <div class="note-rule"></div>
+      <p>最近更新</p>
+      {latest && <a href={`${base}events/${latest.id}/`}><time>{latest.data.date?.toISOString().slice(0, 10)}</time><strong>{latest.data.title}</strong><span>↗</span></a>}
+      <div class="note-stamp">STILL<br />WRITING</div>
+    </aside>
+  </section>
+
+  <section class="timeline-section" id="timeline">
+    <div class="section-heading page-width">
+      <div><span class="section-index">01 / MAIN STORIES</span><h2>日子排着队，<em>故事慢慢走。</em></h2></div>
+      <p>主线不是只有里程碑。<br />那些让后来发生改变的小事，也算。</p>
+    </div>
+    <Timeline events={mainEvents} />
+  </section>
+
+  <section class="trivia-section" id="trivia">
+    <div class="page-width">
+      <div class="section-heading section-heading-dark">
+        <div><span class="section-index">02 / SIDE QUESTS</span><h2>主线之外，<em>还有彩蛋。</em></h2></div>
+        <p>不符合时间顺序，也不必意义深刻。<br />好笑、奇怪、没什么用，但舍不得忘记。</p>
+      </div>
+      <TriviaWall items={triviaItems} />
+    </div>
+  </section>
+
+  <section class="about-section page-width" id="about">
+    <div class="about-copy">
+      <span class="section-index">03 / HOW IT WORKS</span>
+      <h2>写好一个故事，<br />只需要一个 <code>.md</code> 文件。</h2>
+      <p>每篇记录独立存放。顶部用 Frontmatter 标记主线或支线，构建时会自动归类、按日期排序。没有数据库，也不需要后台。</p>
+      <ul class="feature-list">
+        <li><span>01</span><div><strong>主线自动排序</strong><p><code>type: main</code> + 日期，就是时间轴的新章节。</p></div></li>
+        <li><span>02</span><div><strong>支线自由散落</strong><p><code>type: trivia</code>，无需日期也能记录。</p></div></li>
+        <li><span>03</span><div><strong>静态部署</strong><p>构建后可直接托管到 GitHub Pages。</p></div></li>
+      </ul>
+    </div>
+    <div class="code-card" aria-label="Markdown 事件示例">
+      <div class="code-top"><span><i></i><i></i><i></i></span><b>2026-08-09-island.md</b><small>MD</small></div>
+      <pre><code><span class="code-muted">---</span>
+<span class="code-key">title</span>: <span class="code-string">"把夏天留在海岛上"</span>
+<span class="code-key">date</span>: <span class="code-number">2026-08-09</span>
+<span class="code-key">type</span>: <span class="code-string">"main"</span>
+<span class="code-key">tags</span>: [<span class="code-string">"旅行"</span>, <span class="code-string">"海岛"</span>]
+<span class="code-key">summary</span>: <span class="code-string">"没追到日出，但捡回一袋贝壳。"</span>
+<span class="code-key">accent</span>: <span class="code-string">"coral"</span>
+<span class="code-muted">---</span>
+
+<span class="code-comment"># 正文就从这里开始……</span>
+上岛前，天气预报显示两天都是晴。</code></pre>
+      <div class="code-foot"><span>保存</span><i>→</i><span>自动构建</span><i>→</i><strong>故事上线 ✓</strong></div>
+    </div>
+  </section>
+</BaseLayout>

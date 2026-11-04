@@ -1,0 +1,82 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  items: CollectionEntry<'events'>[];
+}
+const { items } = Astro.props;
+---
+
+<div class="trivia-random" id="trivia-random">
+  <div class="random-label"><span>✦</span> 随机掉落一条支线</div>
+  <div class="random-display" aria-live="polite">
+    <span id="random-tag">点击右侧按钮</span>
+    <strong id="random-title">今天会翻到哪件小事？</strong>
+    <p id="random-summary">从不按日期排列的记忆里，随机抽取一条。</p>
+  </div>
+  <button id="random-draw" class="draw-button" type="button">
+    <span>抽一条</span><i aria-hidden="true">↻</i>
+  </button>
+</div>
+
+<div class="trivia-grid">
+  {items.map((item, index) => (
+    <button
+      class:list={["trivia-card", `trivia-${item.data.accent}`, index === 0 ? 'trivia-wide' : '']}
+      type="button"
+      aria-pressed="false"
+      aria-label={`${item.data.title}，点击查看故事`}
+    >
+      <span class="trivia-card-inner">
+        <span class="trivia-face trivia-front">
+          <span class="trivia-card-top"><i>FRAGMENT {String(index + 1).padStart(2, '0')}</i><b>↻</b></span>
+          <span class="trivia-symbol" aria-hidden="true">{['↔', '☕', '⌁', '◖', '♧'][index % 5]}</span>
+          <strong>{item.data.title}</strong>
+          <span class="trivia-summary">{item.data.summary}</span>
+          <span class="trivia-hint">点击翻面读故事</span>
+        </span>
+        <span class="trivia-face trivia-back">
+          <span class="trivia-card-top"><i>BEHIND THE STORY</i><b>↻</b></span>
+          <strong>{item.data.title}</strong>
+          <span class="trivia-body">{item.body}</span>
+          <span class="trivia-hint">再点一次，收好这张卡片</span>
+        </span>
+      </span>
+    </button>
+  ))}
+</div>
+
+<script>
+  function setupTrivia() {
+    const wall = document.getElementById('trivia-random');
+    if (!wall || wall.dataset.ready === 'true') return;
+    wall.dataset.ready = 'true';
+
+    document.querySelectorAll<HTMLButtonElement>('.trivia-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        const flipped = card.classList.toggle('is-flipped');
+        card.setAttribute('aria-pressed', String(flipped));
+      });
+    });
+
+    const button = document.getElementById('random-draw');
+    const title = document.getElementById('random-title');
+    const summary = document.getElementById('random-summary');
+    const tag = document.getElementById('random-tag');
+    const cards = Array.from(document.querySelectorAll<HTMLButtonElement>('.trivia-card'));
+    let last = -1;
+    button?.addEventListener('click', () => {
+      if (!cards.length || !title || !summary || !tag) return;
+      let index = Math.floor(Math.random() * cards.length);
+      if (cards.length > 1 && index === last) index = (index + 1) % cards.length;
+      last = index;
+      const card = cards[index];
+      title.textContent = card.querySelector('.trivia-front strong')?.textContent ?? '';
+      summary.textContent = card.querySelector('.trivia-summary')?.textContent ?? '';
+      tag.textContent = `NO.${String(index + 1).padStart(2, '0')} · 支线已掉落`;
+      wall.classList.remove('just-drew');
+      requestAnimationFrame(() => wall.classList.add('just-drew'));
+    });
+  }
+  document.addEventListener('astro:page-load', setupTrivia);
+</script>

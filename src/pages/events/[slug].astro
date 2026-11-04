@@ -1,0 +1,55 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events', ({ data }) => data.type === 'main');
+  return events.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+interface Props { entry: CollectionEntry<'events'>; }
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const allMain = (await getCollection('events', ({ data }) => data.type === 'main'))
+  .sort((a, b) => (a.data.date?.getTime() ?? 0) - (b.data.date?.getTime() ?? 0));
+const currentIndex = allMain.findIndex((item) => item.id === entry.id);
+const previous = currentIndex > 0 ? allMain[currentIndex - 1] : undefined;
+const next = currentIndex >= 0 && currentIndex < allMain.length - 1 ? allMain[currentIndex + 1] : undefined;
+const formattedDate = entry.data.date?.toISOString().slice(0, 10).replaceAll('-', '.');
+const chapter = currentIndex >= 0 ? `CHAPTER ${String(currentIndex + 1).padStart(2, '0')}` : 'SIDE QUEST';
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title={`${entry.data.title} · 小事存档`} description={entry.data.summary}>
+  <div class:list={["detail-page", `accent-${entry.data.accent}`]}>
+    <div class="detail-back page-width"><a href={`${base}#timeline`}>← 返回时间轴</a><span>MOMENT ARCHIVE / {chapter}</span></div>
+    <article class="detail-card" transition:name={`card-${entry.id}`}>
+      <header class="detail-header">
+        <div class="detail-meta-top"><span>{chapter}</span>{entry.data.tags[0] && <i>#{entry.data.tags[0]}</i>}</div>
+        {formattedDate && <time transition:name={`date-${entry.id}`}>{formattedDate}</time>}
+        <h1 transition:name={`title-${entry.id}`}>{entry.data.title}</h1>
+        <p>{entry.data.summary}</p>
+        <div class="detail-info">
+          {entry.data.location && <span><i>⌖</i>{entry.data.location}</span>}
+          <span><i>◷</i>约 2 分钟读完</span>
+        </div>
+        <div class="detail-decoration" aria-hidden="true"><span></span><i>✳</i><span></span></div>
+      </header>
+      <div class="detail-body">
+        <Content />
+      </div>
+      <footer class="detail-end"><span>✳</span><p>这件小事，已妥善收好。</p><small>END OF THIS MOMENT</small></footer>
+    </article>
+
+    {entry.data.type === 'main' && (
+      <nav class="detail-pagination page-width" aria-label="相邻故事">
+        {previous ? <a class="pagination-prev" href={`${base}events/${previous.id}/`}><span>← 上一章</span><strong>{previous.data.title}</strong></a> : <span></span>}
+        {next ? <a class="pagination-next" href={`${base}events/${next.id}/`}><span>下一章 →</span><strong>{next.data.title}</strong></a> : <a class="pagination-next" href={`${base}#trivia`}><span>主线之外 →</span><strong>去看看支线彩蛋</strong></a>}
+      </nav>
+    )}
+  </div>
+</BaseLayout>

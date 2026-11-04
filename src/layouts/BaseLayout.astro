@@ -1,0 +1,57 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = '小事存档 · Moment Archive',
+  description = '用 Markdown 收藏主线故事，也收藏那些不在计划里的支线时刻。',
+} = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <title>{title}</title>
+    <ClientRouter />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到正文</a>
+    <header class="site-header">
+      <a class="brand" href={base} aria-label="小事存档首页">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><strong>小事存档</strong><small>MOMENT ARCHIVE</small></span>
+      </a>
+      <nav class="site-nav" aria-label="主导航">
+        <a href={`${base}#timeline`}>主线</a>
+        <a href={`${base}#trivia`}>支线</a>
+        <a href={`${base}#about`}>关于</a>
+      </nav>
+      <a class="header-note" href={`${base}#timeline`}><span></span> 持续记录中</a>
+    </header>
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <span class="footer-star" aria-hidden="true">✳</span>
+        <p>日子不必惊天动地，<br />值得记住就好。</p>
+      </div>
+      <div class="footer-meta">
+        <span>BUILT WITH MARKDOWN & ASTRO</span>
+        <span>© 2026 MOMENT ARCHIVE</span>
+      </div>
+    </footer>
+  </body>
+</html>
