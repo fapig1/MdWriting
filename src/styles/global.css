@@ -99,7 +99,7 @@ button { font: inherit; }
 .timeline-viewport { overflow-x: auto; overflow-y: hidden; padding: 0 var(--gutter); outline: none; cursor: grab; scrollbar-width: none; }
 .timeline-viewport::-webkit-scrollbar { display: none; }
 .timeline-viewport.is-dragging { cursor: grabbing; user-select: none; }
-.timeline-track { height: 540px; min-width: max-content; display: flex; align-items: stretch; position: relative; padding: 0 60px 0 0; }
+.timeline-track { height: 760px; min-width: max-content; display: flex; align-items: stretch; position: relative; padding: 0 60px 0 0; }
 .timeline-axis { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #bfc5b9; z-index: 0; }
 .timeline-axis::before { content: ""; position: absolute; inset: -1px 0; background: linear-gradient(90deg, transparent, #7e938b 5%, #7e938b 94%, transparent); opacity: .45; }
 .timeline-axis span { position: absolute; right: -1px; top: -4px; width: 8px; height: 8px; border-top: 1px solid #7e938b; border-right: 1px solid #7e938b; transform: rotate(45deg); }
@@ -271,7 +271,7 @@ button { font: inherit; }
   .section-heading h2, .about-copy h2 { font-size: 31px; }
   .timeline-section { padding-top: 65px; }
   .timeline-toolbar > p { max-width: 160px; line-height: 1.6; }
-  .timeline-track { height: 510px; }
+  .timeline-track { height: 700px; }
   .timeline-item { width: 282px; margin-left: -24px; }
   .timeline-card-wrap { width: 244px; }
   .story-card { min-height: 228px; }
