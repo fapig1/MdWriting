@@ -4,7 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
-  const events = await getCollection('events', ({ data }) => data.type === 'main');
+  const events = await getCollection('events');
   return events.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },
@@ -16,17 +16,27 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const allMain = (await getCollection('events', ({ data }) => data.type === 'main'))
   .sort((a, b) => (a.data.date?.getTime() ?? 0) - (b.data.date?.getTime() ?? 0));
+const allTrivia = await getCollection('events', ({ data }) => data.type === 'trivia');
+const isMain = entry.data.type === 'main';
 const currentIndex = allMain.findIndex((item) => item.id === entry.id);
-const previous = currentIndex > 0 ? allMain[currentIndex - 1] : undefined;
-const next = currentIndex >= 0 && currentIndex < allMain.length - 1 ? allMain[currentIndex + 1] : undefined;
+const triviaIndex = allTrivia.findIndex((item) => item.id === entry.id);
+const previous = isMain && currentIndex > 0 ? allMain[currentIndex - 1] : undefined;
+const next = isMain && currentIndex >= 0 && currentIndex < allMain.length - 1 ? allMain[currentIndex + 1] : undefined;
+const triviaPrevious = !isMain && triviaIndex > 0 ? allTrivia[triviaIndex - 1] : undefined;
+const triviaNext = !isMain && triviaIndex >= 0 && triviaIndex < allTrivia.length - 1 ? allTrivia[triviaIndex + 1] : undefined;
 const formattedDate = entry.data.date?.toISOString().slice(0, 10).replaceAll('-', '.');
-const chapter = currentIndex >= 0 ? `CHAPTER ${String(currentIndex + 1).padStart(2, '0')}` : 'SIDE QUEST';
+const chapter = isMain
+  ? `CHAPTER ${String(currentIndex + 1).padStart(2, '0')}`
+  : `FRAGMENT ${String(triviaIndex + 1).padStart(2, '0')}`;
+const readingMinutes = Math.max(1, Math.round((entry.body?.length ?? 0) / 400));
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+const backHref = isMain ? `${base}#timeline` : `${base}trivia/`;
+const backLabel = isMain ? '← 返回时间轴' : '← 返回支线列表';
 ---
 
 <BaseLayout title={`${entry.data.title} · 小事存档`} description={entry.data.summary}>
   <div class:list={["detail-page", `accent-${entry.data.accent}`]}>
-    <div class="detail-back page-width"><a href={`${base}#timeline`}>← 返回时间轴</a><span>MOMENT ARCHIVE / {chapter}</span></div>
+    <div class="detail-back page-width"><a href={backHref}>{backLabel}</a><span>MOMENT ARCHIVE / {chapter}</span></div>
     <article class="detail-card" transition:name={`card-${entry.id}`}>
       <header class="detail-header">
         <div class="detail-meta-top"><span>{chapter}</span>{entry.data.tags[0] && <i>#{entry.data.tags[0]}</i>}</div>
@@ -35,7 +45,7 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
         <p>{entry.data.summary}</p>
         <div class="detail-info">
           {entry.data.location && <span><i>⌖</i>{entry.data.location}</span>}
-          <span><i>◷</i>约 2 分钟读完</span>
+          <span><i>◷</i>约 {readingMinutes} 分钟读完</span>
         </div>
         <div class="detail-decoration" aria-hidden="true"><span></span><i>✳</i><span></span></div>
       </header>
@@ -45,10 +55,17 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
       <footer class="detail-end"><span>✳</span><p>这件小事，已妥善收好。</p><small>END OF THIS MOMENT</small></footer>
     </article>
 
-    {entry.data.type === 'main' && (
+    {isMain && (
       <nav class="detail-pagination page-width" aria-label="相邻故事">
         {previous ? <a class="pagination-prev" href={`${base}events/${previous.id}/`}><span>← 上一章</span><strong>{previous.data.title}</strong></a> : <span></span>}
-        {next ? <a class="pagination-next" href={`${base}events/${next.id}/`}><span>下一章 →</span><strong>{next.data.title}</strong></a> : <a class="pagination-next" href={`${base}#trivia`}><span>主线之外 →</span><strong>去看看支线彩蛋</strong></a>}
+        {next ? <a class="pagination-next" href={`${base}events/${next.id}/`}><span>下一章 →</span><strong>{next.data.title}</strong></a> : <a class="pagination-next" href={`${base}trivia/`}><span>主线之外 →</span><strong>去看看支线彩蛋</strong></a>}
+      </nav>
+    )}
+
+    {!isMain && (
+      <nav class="detail-pagination page-width" aria-label="相邻支线">
+        {triviaPrevious ? <a class="pagination-prev" href={`${base}events/${triviaPrevious.id}/`}><span>← 上一条</span><strong>{triviaPrevious.data.title}</strong></a> : <a class="pagination-prev" href={`${base}trivia/`}><span>← 返回列表</span><strong>全部支线碎片</strong></a>}
+        {triviaNext ? <a class="pagination-next" href={`${base}events/${triviaNext.id}/`}><span>下一条 →</span><strong>{triviaNext.data.title}</strong></a> : <a class="pagination-next" href={`${base}trivia/`}><span>支线列表 →</span><strong>看看其他碎片</strong></a>}
       </nav>
     )}
   </div>

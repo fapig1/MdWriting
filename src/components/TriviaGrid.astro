@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  items: CollectionEntry<'events'>[];
+}
+const { items } = Astro.props;
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
+const symbols = ['↔', '☕', '⌁', '◖', '♧', '✳', '◷', '✉'];
+---
+
+<div class="trivia-grid">
+  {items.map((item, index) => (
+    <a
+      class:list={['trivia-card', `trivia-${item.data.accent}`]}
+      href={`${base}events/${item.id}/`}
+      transition:name={`card-${item.id}`}
+    >
+      <span class="trivia-card-top">
+        <i>FRAGMENT {String(index + 1).padStart(2, '0')}</i>
+        <b>↗</b>
+      </span>
+      <span class="trivia-symbol" aria-hidden="true">{symbols[index % symbols.length]}</span>
+      {item.data.tags[0] && <span class="trivia-tag">#{item.data.tags[0]}</span>}
+      <strong transition:name={`title-${item.id}`}>{item.data.title}</strong>
+      <p>{item.data.summary}</p>
+      <span class="trivia-foot">
+        <i>SIDE QUEST</i>
+        <span>点击阅读完整故事 →</span>
+      </span>
+    </a>
+  ))}
+</div>

@@ -2,7 +2,6 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Timeline from '../components/Timeline.astro';
-import TriviaWall from '../components/TriviaWall.astro';
 
 const records = await getCollection('events');
 const mainEvents = records
@@ -46,19 +45,9 @@ const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
     <Timeline events={mainEvents} />
   </section>
 
-  <section class="trivia-section" id="trivia">
-    <div class="page-width">
-      <div class="section-heading section-heading-dark">
-        <div><span class="section-index">02 / SIDE QUESTS</span><h2>主线之外，<em>还有彩蛋。</em></h2></div>
-        <p>不符合时间顺序，也不必意义深刻。<br />好笑、奇怪、没什么用，但舍不得忘记。</p>
-      </div>
-      <TriviaWall items={triviaItems} />
-    </div>
-  </section>
-
   <section class="about-section page-width" id="about">
     <div class="about-copy">
-      <span class="section-index">03 / HOW IT WORKS</span>
+      <span class="section-index">02 / HOW IT WORKS</span>
       <h2>写好一个故事，<br />只需要一个 <code>.md</code> 文件。</h2>
       <p>每篇记录独立存放。顶部用 Frontmatter 标记主线或支线，构建时会自动归类、按日期排序。没有数据库，也不需要后台。</p>
       <ul class="feature-list">

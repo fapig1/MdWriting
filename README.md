@@ -36,11 +36,27 @@ accent: "coral"
 这里写正文，支持标准 Markdown。
 ```
 
+## 页面结构
+
+- `/`：主页，主线时间轴
+- `/trivia/`：支线页，支线卡片列表
+- `/events/.../`：主线 / 支线详情页
+
 支线趣事将 `type` 改为 `trivia`，`date` 可以省略。`accent` 支持 `coral`、`blue`、`gold`、`green`。
 
 - `main`：自动按日期升序进入横向时间轴，并生成独立详情页。
-- `trivia`：进入支线卡片墙，支持翻转阅读和随机抽取。
+- `trivia`：进入支线页的卡片列表，点击卡片打开独立详情页，可放很长的聊天记录截图。
 - 所有页面在构建时生成，无需数据库，可部署到 GitHub Pages 等静态托管服务。
+
+## 插入聊天记录截图
+
+把截图放到 `src/assets/screenshots/`，然后在任意事件的 Markdown 正文中使用相对路径引用：
+
+```markdown
+![聊天记录](../../assets/screenshots/example.png)
+```
+
+图片会自动优化并在详情页中居中显示。长图、多张连续截图都可以。
 
 ## GitHub Pages
 

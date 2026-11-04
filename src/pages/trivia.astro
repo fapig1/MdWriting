@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TriviaGrid from '../components/TriviaGrid.astro';
+
+const triviaItems = await getCollection('events', ({ data }) => data.type === 'trivia');
+---
+
+<BaseLayout title="支线趣事 · 小事存档" description="不按时间顺序排列的小事、笑点和碎片记录。">
+  <div class="trivia-page">
+    <section class="trivia-hero">
+      <span class="section-index">SIDE QUESTS</span>
+      <h1>主线之外，<em>还有彩蛋。</em></h1>
+      <p>不符合时间顺序，也不必意义深刻。好笑、奇怪、没什么用，但舍不得忘记的碎片，都收在这里。</p>
+      <div class="trivia-hero-meta">
+        <span><strong>{String(triviaItems.length).padStart(2, '0')}</strong> 条支线记录</span>
+        <span>持续掉落中 <i>✳</i></span>
+      </div>
+    </section>
+    <div class="page-width">
+      <TriviaGrid items={triviaItems} />
+    </div>
+  </div>
+</BaseLayout>
