@@ -99,6 +99,7 @@ button { font: inherit; }
 .timeline-viewport { overflow-x: auto; overflow-y: hidden; padding: 0 var(--gutter); outline: none; cursor: grab; scrollbar-width: none; }
 .timeline-viewport::-webkit-scrollbar { display: none; }
 .timeline-viewport.is-dragging { cursor: grabbing; user-select: none; }
+/* 轨道高度需容纳最长连接线 + 完整卡片，避免上下分支被裁切。 */
 .timeline-track { height: 760px; min-width: max-content; display: flex; align-items: stretch; position: relative; padding: 0 60px 0 0; }
 .timeline-axis { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #bfc5b9; z-index: 0; }
 .timeline-axis::before { content: ""; position: absolute; inset: -1px 0; background: linear-gradient(90deg, transparent, #7e938b 5%, #7e938b 94%, transparent); opacity: .45; }

@@ -1,33 +1,60 @@
 # 小事存档 · Moment Archive
 
-一个由 Markdown 驱动的通用时间线档案站点。适合生活记录、项目里程碑、旅行故事或任何「主线 + 支线」内容。
+一个由 Markdown 驱动的双页面时间线网站。主页记录按日期发生的主线故事，支线页收集不按时间顺序排列的趣事与碎片。
 
-在线访问（启用 GitHub Pages 后）：https://fapig1.github.io/MdWriting/
+- 线上站点：https://fapig1.github.io/MdWriting/
+- 支线页面：https://fapig1.github.io/MdWriting/trivia/
+- 技术栈：Astro 5、Tailwind CSS 4、Astro Content Collections
+- 部署方式：GitHub Actions → GitHub Pages
+
+## 页面结构
+
+| 路径 | 内容 |
+| --- | --- |
+| `/` | 主页，仅展示横向主线时间轴 |
+| `/trivia/` | 独立的支线列表页 |
+| `/events/<文件名>/` | 主线与支线的详情页 |
+
+站点没有数据库或后台。所有页面在构建时由 Markdown 自动生成。
 
 ## 本地运行
+
+要求 Node.js 20 或更高版本。
 
 ```bash
 npm install
 npm run dev
 ```
 
-生产构建：
+本地地址是：
+
+```text
+http://127.0.0.1:4321/MdWriting/
+```
+
+> 项目部署在仓库子路径下，因此本地也需要访问 `/MdWriting/`，不能直接打开根路径。
+
+生产构建与预览：
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## 新增一条记录
+## 新增记录
 
-在 `src/content/events/` 新建 `.md` 文件。主线事件示例：
+在 `src/content/events/` 中新建 `.md` 文件。文件名建议使用 `日期-简短英文名.md`，例如 `2026-11-05-first-snow.md`。
+
+### 主线故事
+
+主线会按 `date` 升序进入时间轴，并自动生成详情页。
 
 ```markdown
 ---
 title: "一个值得记住的日子"
-date: 2026-11-04
+date: 2026-11-05
 type: "main"
-tags: ["日常"]
+tags: ["日常", "冬天"]
 summary: "显示在时间轴卡片上的简短摘要。"
 location: "任意地点"
 accent: "coral"
@@ -36,28 +63,87 @@ accent: "coral"
 这里写正文，支持标准 Markdown。
 ```
 
-## 页面结构
+### 支线趣事
 
-- `/`：主页，主线时间轴
-- `/trivia/`：支线页，支线卡片列表
-- `/events/.../`：主线 / 支线详情页
+支线进入 `/trivia/` 页面，不要求日期；点击卡片进入独立的详情页。
 
-支线趣事将 `type` 改为 `trivia`，`date` 可以省略。`accent` 支持 `coral`、`blue`、`gold`、`green`。
+```markdown
+---
+title: "一件没什么用但舍不得忘的小事"
+type: "trivia"
+tags: ["碎片"]
+summary: "显示在支线卡片上的摘要。"
+accent: "gold"
+---
 
-- `main`：自动按日期升序进入横向时间轴，并生成独立详情页。
-- `trivia`：进入支线页的卡片列表，点击卡片打开独立详情页，可放很长的聊天记录截图。
-- 所有页面在构建时生成，无需数据库，可部署到 GitHub Pages 等静态托管服务。
+支线正文同样支持标准 Markdown，也可以插入长截图。
+```
+
+### Frontmatter 字段
+
+| 字段 | 必填 | 说明 |
+| --- | --- | --- |
+| `title` | 是 | 故事标题 |
+| `type` | 是 | `main` 为主线，`trivia` 为支线 |
+| `summary` | 是 | 卡片摘要与页面描述 |
+| `date` | 主线必填 | 主线排序依据，建议格式 `YYYY-MM-DD` |
+| `tags` | 否 | 标签数组，卡片显示第一个标签 |
+| `location` | 否 | 地点，显示在卡片和详情页 |
+| `accent` | 否 | `coral`、`blue`、`gold`、`green`，默认 `blue` |
+
+修改或保存 Markdown 后，开发服务器会自动刷新；提交并推送后，GitHub Pages 会自动更新。
 
 ## 插入聊天记录截图
 
-把截图放到 `src/assets/screenshots/`，然后在任意事件的 Markdown 正文中使用相对路径引用：
+把截图放进 `src/assets/screenshots/`，然后从事件 Markdown 引用相对路径：
 
 ```markdown
 ![聊天记录](../../assets/screenshots/example.png)
 ```
 
-图片会自动优化并在详情页中居中显示。长图、多张连续截图都可以。
+详情页会自动处理图片宽度、边框和居中。长图、多张连续截图均可。
 
-## GitHub Pages
+## 更新与发布
 
-仓库已包含 `.github/workflows/deploy.yml`。推送到 `main` 后，在仓库 Settings → Pages 中选择 GitHub Actions 作为来源即可。若使用 `用户名.github.io/仓库名` 形式的项目站点，请在 `astro.config.mjs` 中补充对应的 `site` 与 `base` 配置。
+```bash
+git add .
+git commit -m "添加新事件"
+git push origin main
+```
+
+推送后可在 Actions 页面查看自动部署状态：
+
+https://github.com/fapig1/MdWriting/actions
+
+### GitHub Pages 配置
+
+仓库已配置 `.github/workflows/deploy.yml`。Pages 的 **Source 必须设置为 GitHub Actions**，而不是 `Deploy from a branch`：
+
+https://github.com/fapig1/MdWriting/settings/pages
+
+`astro.config.mjs` 中的 `site` 与 `base` 对应项目站点地址：
+
+```js
+site: 'https://fapig1.github.io',
+base: '/MdWriting',
+```
+
+如果以后更改仓库名称，需要同步修改这两个值，以及页面中的站内链接。
+
+## 目录说明
+
+```text
+src/
+├── assets/screenshots/     # 支线聊天截图等图片
+├── components/
+│   ├── Timeline.astro      # 横向交错主线时间轴
+│   └── TriviaGrid.astro    # 支线卡片列表
+├── content/events/         # 所有主线与支线 Markdown
+├── layouts/BaseLayout.astro
+├── pages/
+│   ├── index.astro         # 主页，仅时间轴
+│   ├── trivia.astro        # 支线列表页
+│   └── events/[slug].astro # 主线与支线详情页
+├── styles/global.css
+└── content.config.ts       # 内容字段校验
+```

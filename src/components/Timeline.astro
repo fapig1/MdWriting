@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 
+// 只接收已按日期排序的主线事件，支线由 /trivia/ 单独渲染。
 interface Props {
   events: CollectionEntry<'events'>[];
 }

@@ -1,5 +1,6 @@
 name: Deploy to GitHub Pages
 
+# 推送到 main 后自动构建并发布；也可在 Actions 页面手动触发。
 on:
   push:
     branches: [main]
@@ -19,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # 安装依赖、执行 Astro 构建，并上传 Pages artifact。
       - uses: withastro/action@v3
 
   deploy:
@@ -28,5 +30,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # 仓库 Settings → Pages 的 Source 必须设为 GitHub Actions。
       - id: deployment
         uses: actions/deploy-pages@v4
