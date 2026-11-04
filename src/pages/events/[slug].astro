@@ -21,7 +21,7 @@ const previous = currentIndex > 0 ? allMain[currentIndex - 1] : undefined;
 const next = currentIndex >= 0 && currentIndex < allMain.length - 1 ? allMain[currentIndex + 1] : undefined;
 const formattedDate = entry.data.date?.toISOString().slice(0, 10).replaceAll('-', '.');
 const chapter = currentIndex >= 0 ? `CHAPTER ${String(currentIndex + 1).padStart(2, '0')}` : 'SIDE QUEST';
-const base = import.meta.env.BASE_URL;
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 ---
 
 <BaseLayout title={`${entry.data.title} · 小事存档`} description={entry.data.summary}>

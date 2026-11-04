@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { events } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 const formatDate = (date?: Date) => date ? date.toISOString().slice(0, 10).replaceAll('-', '.') : '';
 const stemHeights = [54, 82, 66, 96, 60, 76];
 ---

@@ -10,7 +10,7 @@ const mainEvents = records
   .sort((a, b) => (a.data.date?.getTime() ?? 0) - (b.data.date?.getTime() ?? 0));
 const triviaItems = records.filter((item) => item.data.type === 'trivia');
 const latest = mainEvents.at(-1);
-const base = import.meta.env.BASE_URL;
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 ---
 
 <BaseLayout>

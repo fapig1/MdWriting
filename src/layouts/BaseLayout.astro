@@ -11,7 +11,7 @@ const {
   title = '小事存档 · Moment Archive',
   description = '用 Markdown 收藏主线故事，也收藏那些不在计划里的支线时刻。',
 } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/`;
 ---
 
 <!doctype html>
