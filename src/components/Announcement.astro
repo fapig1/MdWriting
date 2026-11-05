@@ -1,0 +1,83 @@
+---
+import { getCollection, render } from 'astro:content';
+
+// 首页公告弹窗：置顶公告在前，普通公告按日期倒序只取最近几条。
+const MAX_UPDATES = 3;
+const all = await getCollection('announcements');
+const byDateDesc = (a: (typeof all)[number], b: (typeof all)[number]) => b.data.date.getTime() - a.data.date.getTime();
+const pinned = all.filter((entry) => entry.data.pinned).sort(byDateDesc);
+const updates = all.filter((entry) => !entry.data.pinned).sort(byDateDesc).slice(0, MAX_UPDATES);
+const items = await Promise.all(
+  [...pinned, ...updates].map(async (entry) => ({ entry, Content: (await render(entry)).Content })),
+);
+// 新增或删除公告文件后 version 改变，已勾选"今日内不再显示"的访客也会重新看到。
+const version = items.map(({ entry }) => entry.id).join('|');
+const formatDate = (date: Date) => date.toISOString().slice(0, 10).replaceAll('-', '.');
+---
+
+{items.length > 0 && (
+  <dialog class="announcement" id="announcement" data-version={version} aria-labelledby="announcement-title">
+    <div class="announcement-head">
+      <span class="section-index">NOTICE</span>
+      <h2 id="announcement-title">公告</h2>
+    </div>
+    <ul class="announcement-list">
+      {items.map(({ entry, Content }) => (
+        <li class:list={['announcement-item', { 'is-pinned': entry.data.pinned }]}>
+          <div class="announcement-meta">
+            {entry.data.pinned && <span class="announcement-pin">置顶</span>}
+            <time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time>
+          </div>
+          <strong>{entry.data.title}</strong>
+          <div class="announcement-body"><Content /></div>
+        </li>
+      ))}
+    </ul>
+    <form method="dialog" class="announcement-actions">
+      <label><input type="checkbox" name="hide-today" /> 今日内不再显示</label>
+      <button type="submit">我知道了</button>
+    </form>
+  </dialog>
+)}
+
+<script>
+  const HIDE_KEY = 'announcement-hidden';
+  const SESSION_KEY = 'announcement-seen';
+
+  const today = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+
+  // 隐私模式等环境下 storage 可能不可用，失败时按"未关闭过"处理。
+  const read = (storage: Storage, key: string) => {
+    try { return storage.getItem(key); } catch { return null; }
+  };
+  const write = (storage: Storage, key: string, value: string) => {
+    try { storage.setItem(key, value); } catch { /* ignore */ }
+  };
+
+  function setupAnnouncement() {
+    const dialog = document.getElementById('announcement') as HTMLDialogElement | null;
+    if (!dialog || dialog.dataset.ready === 'true') return;
+    dialog.dataset.ready = 'true';
+
+    const version = dialog.dataset.version ?? '';
+    if (read(localStorage, HIDE_KEY) === `${today()}#${version}`) return;
+    // 本次浏览已关闭过，则站内切回首页时不再重复弹出。
+    if (read(sessionStorage, SESSION_KEY) === version) return;
+
+    dialog.addEventListener('close', () => {
+      const hideToday = dialog.querySelector<HTMLInputElement>('input[name="hide-today"]')?.checked;
+      if (hideToday) write(localStorage, HIDE_KEY, `${today()}#${version}`);
+      write(sessionStorage, SESSION_KEY, version);
+    });
+    // 点击遮罩区域关闭。
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.showModal();
+  }
+
+  document.addEventListener('astro:page-load', setupAnnouncement);
+</script>

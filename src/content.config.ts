@@ -17,4 +17,14 @@ const events = defineCollection({
   }),
 });
 
-export const collections = { events };
+// 首页公告：pinned 为置顶公告，其余按日期倒序只显示最近几条。
+const announcements = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/announcements' }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    pinned: z.boolean().default(false),
+  }),
+});
+
+export const collections = { events, announcements };

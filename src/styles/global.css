@@ -246,6 +246,32 @@ button { font: inherit; }
 .detail-pagination strong { font-size: 14px; font-weight: 500; }
 .pagination-next { text-align: right; }
 
+/* Tailwind preflight 会把 margin 清零，需显式恢复 dialog 的居中。 */
+.announcement { position: fixed; inset: 0; margin: auto; width: min(480px, calc(100% - 32px)); height: fit-content; max-height: min(80vh, 640px); padding: 0; border: 1px solid var(--line); border-radius: 4px; background: var(--white); color: var(--ink); box-shadow: 0 28px 70px #2e2a2426; }
+.announcement[open] { display: flex; flex-direction: column; animation: announcement-in .25s ease; }
+.announcement::backdrop { background: #2e2a2459; backdrop-filter: blur(2px); }
+.announcement-head { padding: 26px 30px 14px; border-bottom: 1px solid var(--line); }
+.announcement-head .section-index { margin-bottom: 8px; }
+.announcement-head h2 { margin: 0; font-size: 22px; letter-spacing: .04em; }
+.announcement-list { list-style: none; margin: 0; padding: 6px 30px; overflow-y: auto; }
+.announcement-item { padding: 16px 0; }
+.announcement-item + .announcement-item { border-top: 1px dashed var(--line); }
+.announcement-item.is-pinned { margin: 10px -14px; padding: 14px; background: color-mix(in srgb, var(--coral) 7%, var(--white)); border-left: 3px solid var(--coral); }
+.announcement-item.is-pinned + .announcement-item { border-top: 0; }
+.announcement-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.announcement-meta time { font: 10px Georgia, serif; letter-spacing: .12em; color: #8a9188; }
+.announcement-pin { padding: 2px 8px; border-radius: 20px; background: var(--coral); color: var(--white); font-size: 10px; }
+.announcement-item > strong { display: block; font-size: 15px; }
+.announcement-body { margin-top: 6px; color: var(--ink-soft); font-size: 13px; line-height: 1.85; }
+.announcement-body p { margin: 0; }
+.announcement-body p + p { margin-top: 8px; }
+.announcement-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 30px 20px; border-top: 1px solid var(--line); }
+.announcement-actions label { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-soft); cursor: pointer; }
+.announcement-actions input { accent-color: var(--coral); }
+.announcement-actions button { padding: 9px 18px; border: 0; border-radius: 4px; background: var(--ink); color: var(--white); font-size: 13px; cursor: pointer; transition: background .2s; }
+.announcement-actions button:hover { background: #24514e; }
+@keyframes announcement-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; gap: 65px; padding-top: 60px; }
   .hero-note { width: min(420px, 90%); justify-self: center; }
@@ -302,6 +328,8 @@ button { font: inherit; }
   .detail-pagination { gap: 10px; }
   .detail-pagination a { padding: 16px 13px; }
   .detail-pagination strong { font-size: 12px; }
+  .announcement-head, .announcement-actions { padding-inline: 20px; }
+  .announcement-list { padding-inline: 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

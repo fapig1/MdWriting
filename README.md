@@ -87,11 +87,31 @@ accent: "gold"
 | `type` | 是 | `main` 为主线，`trivia` 为支线 |
 | `summary` | 是 | 卡片摘要与页面描述 |
 | `date` | 主线必填 | 主线排序依据，建议格式 `YYYY-MM-DD` |
-| `tags` | 否 | 标签数组，卡片显示第一个标签 |
+| `tags` | 否 | 标签数组，卡片与详情页显示全部标签 |
 | `location` | 否 | 地点，显示在卡片和详情页 |
 | `accent` | 否 | `coral`、`blue`、`gold`、`green`，默认 `blue` |
 
 修改或保存 Markdown 后，开发服务器会自动刷新；提交并推送后，GitHub Pages 会自动更新。
+
+## 首页公告
+
+公告只在首页以弹窗形式出现。在 `src/content/announcements/` 中新建 `.md` 文件即可：
+
+```markdown
+---
+title: "更新了新的主线"
+date: 2026-11-20
+pinned: false
+---
+
+新增主线《绕了很远的路去看花》。
+```
+
+- `pinned: true` 的公告固定排在最前，带「置顶」标记。
+- 普通公告按 `date` 倒序，只显示最近 3 条（在 `src/components/Announcement.astro` 的 `MAX_UPDATES` 调整）。
+- 访客勾选「今日内不再显示」后，当天不再弹出；第二天或新增、删除公告文件后会重新弹出。
+- 不勾选直接关闭时，本次浏览期间站内切回首页不会重复弹出。
+- 删除目录下所有公告文件，弹窗就不再出现。
 
 ## 插入聊天记录截图
 
@@ -136,8 +156,10 @@ base: '/MdWriting',
 src/
 ├── assets/screenshots/     # 支线聊天截图等图片
 ├── components/
+│   ├── Announcement.astro  # 首页公告弹窗
 │   ├── Timeline.astro      # 横向交错主线时间轴
 │   └── TriviaGrid.astro    # 支线卡片列表
+├── content/announcements/  # 首页公告 Markdown
 ├── content/events/         # 所有主线与支线 Markdown
 ├── layouts/BaseLayout.astro
 ├── pages/
