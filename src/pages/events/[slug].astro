@@ -4,7 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
-  const events = await getCollection('events');
+  const events = await getCollection('events', ({ data }) => !data.draft);
   return events.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },
@@ -14,9 +14,9 @@ export async function getStaticPaths() {
 interface Props { entry: CollectionEntry<'events'>; }
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const allMain = (await getCollection('events', ({ data }) => data.type === 'main'))
+const allMain = (await getCollection('events', ({ data }) => data.type === 'main' && !data.draft))
   .sort((a, b) => (a.data.date?.getTime() ?? 0) - (b.data.date?.getTime() ?? 0));
-const allTrivia = await getCollection('events', ({ data }) => data.type === 'trivia');
+const allTrivia = await getCollection('events', ({ data }) => data.type === 'trivia' && !data.draft);
 const isMain = entry.data.type === 'main';
 const currentIndex = allMain.findIndex((item) => item.id === entry.id);
 const triviaIndex = allTrivia.findIndex((item) => item.id === entry.id);

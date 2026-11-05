@@ -14,6 +14,8 @@ const events = defineCollection({
     location: z.string().optional(),
     accent: z.enum(['coral', 'blue', 'gold', 'green']).default('blue'),
     cover: z.string().optional(),
+    // 草稿不出现在主页、支线列表和详情页，适合放示例或未完成的稿子。
+    draft: z.boolean().default(false),
   }),
 });
 

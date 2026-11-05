@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TriviaGrid from '../components/TriviaGrid.astro';
 
-const triviaItems = await getCollection('events', ({ data }) => data.type === 'trivia');
+const triviaItems = await getCollection('events', ({ data }) => data.type === 'trivia' && !data.draft);
 ---
 
 <BaseLayout title="支线趣事 · 小事存档" description="不按时间顺序排列的小事、笑点和碎片记录。">

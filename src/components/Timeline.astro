@@ -16,7 +16,7 @@ const stemHeights = [54, 82, 66, 96, 60, 76];
   <div class="timeline-toolbar">
     <p><span class="mouse-icon" aria-hidden="true"></span>滚轮 / 拖拽浏览 · 点击卡片阅读全文</p>
     <div class="timeline-actions">
-      <span class="timeline-count"><b id="current-event">01</b> / {String(events.length).padStart(2, '0')}</span>
+      <span class="timeline-count"><b id="current-event">{events.length > 0 ? '01' : '00'}</b> / {String(events.length).padStart(2, '0')}</span>
       <button class="circle-button" id="timeline-prev" type="button" aria-label="向前浏览">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" /></svg>
       </button>

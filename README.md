@@ -90,6 +90,7 @@ accent: "gold"
 | `tags` | 否 | 标签数组，卡片与详情页显示全部标签 |
 | `location` | 否 | 地点，显示在卡片和详情页 |
 | `accent` | 否 | `coral`、`blue`、`gold`、`green`，默认 `blue` |
+| `draft` | 否 | `true` 时不出现在主页、支线列表和详情页，适合示例或未完成的稿子，默认 `false` |
 
 修改或保存 Markdown 后，开发服务器会自动刷新；提交并推送后，GitHub Pages 会自动更新。
 
