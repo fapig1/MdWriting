@@ -39,7 +39,14 @@ const backLabel = isMain ? '← 返回时间轴' : '← 返回支线列表';
     <div class="detail-back page-width"><a href={backHref}>{backLabel}</a><span>MOMENT ARCHIVE / {chapter}</span></div>
     <article class="detail-card" transition:name={`card-${entry.id}`}>
       <header class="detail-header">
-        <div class="detail-meta-top"><span>{chapter}</span>{entry.data.tags[0] && <i>#{entry.data.tags[0]}</i>}</div>
+        <div class="detail-meta-top">
+          <span>{chapter}</span>
+          {entry.data.tags.length > 0 && (
+            <span class="detail-tags">
+              {entry.data.tags.map((tag) => <i>#{tag}</i>)}
+            </span>
+          )}
+        </div>
         {formattedDate && <time transition:name={`date-${entry.id}`}>{formattedDate}</time>}
         <h1 transition:name={`title-${entry.id}`}>{entry.data.title}</h1>
         <p>{entry.data.summary}</p>

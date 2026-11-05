@@ -45,7 +45,11 @@ const stemHeights = [54, 82, 66, 96, 60, 76];
               <a class="story-card" href={`${base}events/${event.id}/`} transition:name={`card-${event.id}`}>
                 <div class="card-topline">
                   <span class="story-number">CH.{String(index + 1).padStart(2, '0')}</span>
-                  <span class:list={["mini-tag", `tag-${event.data.accent}`]}>{event.data.tags[0]}</span>
+                  <span class="mini-tags">
+                    {event.data.tags.map((tag) => (
+                      <span class:list={["mini-tag", `tag-${event.data.accent}`]}>{tag}</span>
+                    ))}
+                  </span>
                 </div>
                 <time datetime={event.data.date?.toISOString()} transition:name={`date-${event.id}`}>{formatDate(event.data.date)}</time>
                 <h3 transition:name={`title-${event.id}`}>{event.data.title}</h3>

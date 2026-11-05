@@ -121,6 +121,7 @@ button { font: inherit; }
 .story-card:hover { transform: translateY(-7px) rotate(-.4deg); box-shadow: 0 20px 35px #223c2f14; border-color: var(--accent, var(--blue)); }
 .card-topline, .card-bottomline { display: flex; justify-content: space-between; align-items: center; }
 .story-number { font: 9px Georgia, serif; letter-spacing: .15em; color: #8e948a; }
+.mini-tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
 .mini-tag { padding: 4px 8px; font-size: 9px; border-radius: 20px; background: color-mix(in srgb, var(--accent) 11%, transparent); color: var(--accent); }
 .story-card time { font: 14px/1.35 Georgia, serif; color: var(--accent, var(--blue)); letter-spacing: .05em; margin-top: 18px; }
 .story-card h3 { margin: 8px 0 10px; font-size: 19px; line-height: 1.45; letter-spacing: -.02em; }
@@ -159,7 +160,8 @@ button { font: inherit; }
 .trivia-card-top b { font-size: 20px; font-weight: 400; opacity: .58; transition: transform .2s; }
 .trivia-card:hover .trivia-card-top b { transform: translate(3px, -3px); }
 .trivia-symbol { position: absolute; right: 24px; top: 62px; font: 92px/1 Georgia, serif; color: var(--symbol, #8a7c70); opacity: .2; transform: rotate(-8deg); pointer-events: none; }
-.trivia-tag { position: relative; margin-top: 38px; width: fit-content; padding: 5px 10px; border-radius: 20px; background: color-mix(in srgb, var(--symbol) 10%, transparent); font-size: 10px; letter-spacing: .04em; }
+.trivia-tags { position: relative; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 38px; width: fit-content; }
+.trivia-tag { padding: 5px 10px; border-radius: 20px; background: color-mix(in srgb, var(--symbol) 10%, transparent); font-size: 10px; letter-spacing: .04em; }
 .trivia-card > strong { position: relative; max-width: 86%; margin: 14px 0 0; font-size: clamp(24px, 2.4vw, 29px); line-height: 1.42; letter-spacing: -.035em; }
 .trivia-card > p { position: relative; margin: 14px 0 0; max-width: 560px; font-size: 14px; line-height: 1.85; color: var(--ink-soft); }
 .trivia-foot { position: relative; margin-top: auto; padding-top: 28px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; letter-spacing: .08em; color: var(--ink-soft); }
@@ -208,6 +210,7 @@ button { font: inherit; }
 .detail-header { position: relative; padding: 52px 70px 42px; text-align: center; background: color-mix(in srgb, var(--accent) 8%, var(--white)); overflow: hidden; }
 .detail-header::before { content: ""; position: absolute; width: 240px; height: 240px; border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent); border-radius: 50%; left: -160px; top: -130px; box-shadow: 0 0 0 25px color-mix(in srgb, var(--accent) 4%, transparent), 0 0 0 50px color-mix(in srgb, var(--accent) 3%, transparent); }
 .detail-meta-top { display: flex; align-items: center; justify-content: center; gap: 12px; font: 9px Georgia, serif; letter-spacing: .14em; color: var(--accent); }
+.detail-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .detail-meta-top i { font: 9px sans-serif; letter-spacing: 0; border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 20px; padding: 4px 8px; }
 .detail-header time { display: block; margin-top: 26px; font: 12px Georgia, serif; letter-spacing: .12em; color: var(--accent); }
 .detail-header h1 { margin: 13px auto 15px; font-size: clamp(30px, 5vw, 44px); line-height: 1.35; letter-spacing: -.035em; }
