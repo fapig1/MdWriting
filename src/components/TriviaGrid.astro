@@ -15,6 +15,7 @@ const symbols = ['↔', '☕', '⌁', '◖', '♧', '✳', '◷', '✉'];
     <a
       class:list={['trivia-card', `trivia-${item.data.accent}`]}
       href={`${base}events/${item.id}/`}
+      style={`--i: ${index};`}
       transition:name={`card-${item.id}`}
     >
       <span class="trivia-card-top">

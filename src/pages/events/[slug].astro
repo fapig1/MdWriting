@@ -34,7 +34,7 @@ const backHref = isMain ? `${base}#timeline` : `${base}trivia/`;
 const backLabel = isMain ? '← 返回时间轴' : '← 返回支线列表';
 ---
 
-<BaseLayout title={`${entry.data.title} · 小事存档`} description={entry.data.summary}>
+<BaseLayout title={`${entry.data.title} · 小事存档`} description={entry.data.summary} section={isMain ? 'main' : 'trivia'}>
   <div class:list={["detail-page", `accent-${entry.data.accent}`]}>
     <div class="detail-back page-width"><a href={backHref}>{backLabel}</a><span>MOMENT ARCHIVE / {chapter}</span></div>
     <article class="detail-card" transition:name={`card-${entry.id}`}>

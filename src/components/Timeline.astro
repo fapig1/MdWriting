@@ -36,7 +36,7 @@ const stemHeights = [54, 82, 66, 96, 60, 76];
         return (
           <article
             class:list={["timeline-item", isTop ? 'is-top' : 'is-bottom', `accent-${event.data.accent}`]}
-            style={`--stem: ${stem}px;`}
+            style={`--stem: ${stem}px; --i: ${index};`}
             data-event-index={index}
           >
             <div class="timeline-dot" aria-hidden="true"><span></span></div>

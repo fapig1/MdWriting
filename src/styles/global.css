@@ -237,6 +237,7 @@ button { font: inherit; }
 .detail-body :is(h1, h2, h3, h4, h5, h6) + :is(h2, h3, h4, h5, h6) { margin-top: 12px; }
 .detail-body > :is(h1, h2, h3, h4, h5, h6):first-child { margin-top: 0; }
 .detail-body p { margin: 0 0 20px; }
+.detail-body em { font-synthesis-style: auto; }
 .detail-body > p:first-child::first-letter { float: left; font: 46px/1 Georgia, serif; color: var(--accent); padding: 7px 8px 0 0; }
 .detail-body blockquote { margin: 32px -20px; padding: 20px 28px; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--paper)); color: var(--ink); font-size: 16px; }
 .detail-body blockquote p { margin: 0; }
@@ -289,6 +290,46 @@ button { font: inherit; }
 .announcement-actions button { padding: 9px 18px; border: 0; border-radius: 4px; background: var(--ink); color: var(--white); font-size: 13px; cursor: pointer; transition: background .2s; }
 .announcement-actions button:hover { background: #24514e; }
 @keyframes announcement-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* 页面切换：页头页脚固定，主线 ↔ 支线时正文按导航顺序横向滑动（方向由 BaseLayout 写入 data-nav-dir）。 */
+:root {
+  --ease-out-soft: cubic-bezier(.2, .8, .2, 1);
+  --ease-spring: linear(0, .009, .035 2.1%, .141 4.4%, .281 6.7%, .723 12.9%, .938 16.7%, 1.017 19.4%, 1.067 21.8%, 1.077 24.3%, 1.066 26.9%, 1.027 31.9%, .996 38.1%, .988 44.4%, 1.001 62.5%, 1);
+}
+.site-nav a[aria-current] { color: var(--ink); font-weight: 600; }
+.site-nav a[aria-current]::after { display: none; }
+.nav-indicator { position: absolute; left: 0; right: 0; bottom: 4px; height: 2px; border-radius: 2px; background: var(--coral); }
+::view-transition-group(nav-indicator) { animation-duration: .5s; animation-timing-function: var(--ease-out-soft); }
+::view-transition-old(nav-indicator) { animation: none; opacity: 0; }
+::view-transition-new(nav-indicator) { animation: nav-stretch .5s var(--ease-out-soft); mix-blend-mode: normal; }
+@keyframes nav-stretch { 45% { transform: scaleX(1.9); } }
+
+/* 滑动期间取消卡片自己的共享元素名，让卡片跟随正文一起移动。 */
+html[data-nav-dir] :is(.story-card, .story-card time, .story-card h3, .trivia-card, .trivia-card strong) { view-transition-name: none; }
+html[data-nav-dir]::view-transition-group(page-main) { animation-duration: .42s; animation-timing-function: var(--ease-out-soft); }
+html[data-nav-dir=next]::view-transition-old(page-main) { animation: page-out-left .24s ease-in both; mix-blend-mode: normal; }
+html[data-nav-dir=next]::view-transition-new(page-main) { animation: page-in-right .42s var(--ease-out-soft) .06s both; mix-blend-mode: normal; }
+html[data-nav-dir=prev]::view-transition-old(page-main) { animation: page-out-right .24s ease-in both; mix-blend-mode: normal; }
+html[data-nav-dir=prev]::view-transition-new(page-main) { animation: page-in-left .42s var(--ease-out-soft) .06s both; mix-blend-mode: normal; }
+@keyframes page-out-left { to { opacity: 0; transform: translateX(-60px); } }
+@keyframes page-out-right { to { opacity: 0; transform: translateX(60px); } }
+@keyframes page-in-right { from { opacity: 0; transform: translateX(60px); } }
+@keyframes page-in-left { from { opacity: 0; transform: translateX(-60px); } }
+
+/* 站内切到主线 / 支线后的入场：用独立的 translate / scale / rotate 属性，不覆盖元素原有的 transform 和 hover 效果。 */
+html[data-page-enter] .timeline-axis { transform-origin: left; animation: axis-draw .7s var(--ease-out-soft) .1s backwards; }
+html[data-page-enter] .timeline-dot { animation: dot-pop .5s var(--ease-spring) calc(.3s + min(var(--i), 8) * 70ms) backwards; }
+html[data-page-enter] .timeline-stem { animation: stem-grow .35s var(--ease-out-soft) calc(.38s + min(var(--i), 8) * 70ms) backwards; }
+html[data-page-enter] .is-top .timeline-stem { transform-origin: bottom; }
+html[data-page-enter] .is-bottom .timeline-stem { transform-origin: top; }
+html[data-page-enter] .timeline-card-wrap { animation: card-drop .6s var(--ease-spring) calc(.45s + min(var(--i), 8) * 70ms) backwards; }
+html[data-page-enter] .is-bottom .timeline-card-wrap { --drop-y: -14px; }
+html[data-page-enter] .trivia-card { animation: note-pin .65s var(--ease-spring) calc(.12s + min(var(--i), 8) * 55ms) backwards; }
+@keyframes axis-draw { from { scale: 0 1; } }
+@keyframes dot-pop { from { scale: 0; } }
+@keyframes stem-grow { from { scale: 1 0; } }
+@keyframes card-drop { from { opacity: 0; translate: 0 var(--drop-y, 14px); } }
+@keyframes note-pin { from { opacity: 0; translate: 0 18px; rotate: -1.5deg; } }
 
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; gap: 65px; padding-top: 60px; }
@@ -356,4 +397,6 @@ button { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  html[data-page-enter] * { animation: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
